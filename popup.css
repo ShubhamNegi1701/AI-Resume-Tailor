@@ -1,0 +1,394 @@
+body {
+    width: 350px;
+    padding: 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.header {
+    text-align: center;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+.header h1 {
+    font-size: 20px;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.resume-upload {
+    text-align: center;
+    padding: 20px;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+}
+
+.file-input {
+    display: none;
+}
+
+.upload-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upload-btn:hover {
+    background-color: #2980b9;
+}
+
+.primary-btn, .secondary-btn {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.primary-btn {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.secondary-btn {
+    background-color: #f0f0f0;
+    color: #2c3e50;
+}
+
+.status {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+}
+
+.file-name {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.upload-progress {
+    margin-top: 10px;
+    width: 100%;
+    height: auto;
+    background-color: #f0f0f0;
+    border-radius: 2px;
+    overflow: hidden;
+    padding-bottom: 5px;
+    position: relative;
+}
+
+.upload-progress .progress-bar {
+    width: 100%;
+    height: 4px;
+    background-color: #2ecc71;
+    animation: progress 2s infinite linear;
+    transform-origin: 0% 50%;
+}
+
+.progress-percentage {
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* When we have an actual percentage, we'll override the animation */
+.upload-progress.with-percentage .progress-bar {
+    animation: none;
+    transition: width 0.3s;
+}
+
+@keyframes progress {
+    0% {
+        transform: scaleX(0);
+    }
+    50% {
+        transform: scaleX(0.5);
+    }
+    100% {
+        transform: scaleX(1);
+    }
+}
+
+.upload-error {
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #ffebee;
+    border: 1px solid #ffcdd2;
+    border-radius: 4px;
+}
+
+.upload-summary {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: left;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.upload-summary h3 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    color: #2c3e50;
+}
+
+.parsed-section {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.parsed-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.parsed-section h4 {
+    margin: 0 0 5px 0;
+    color: #34495e;
+    font-size: 14px;
+}
+
+.parsed-section p {
+    margin: 0;
+    color: #666;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.upload-summary ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.upload-summary li {
+    margin: 5px 0;
+}
+
+.upload-success {
+    background-color: #e8f5e9;
+    border: 1px solid #81c784;
+    border-radius: 4px;
+    padding: 12px;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.upload-success .success-icon {
+    color: #2ecc71;
+    font-size: 20px;
+}
+
+.parsed-details {
+    margin-top: 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.parsed-details h3 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #2c3e50;
+}
+
+.parsed-item {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 13px;
+}
+
+.parsed-label {
+    color: #666;
+    min-width: 100px;
+}
+
+.parsed-value {
+    color: #2c3e50;
+    flex: 1;
+}
+
+.settings-section {
+    margin-top: 15px;
+    text-align: right;
+}
+
+.settings-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.settings-btn:hover {
+    background: #f0f0f0;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 300px;
+}
+
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.settings-form label {
+    font-weight: bold;
+}
+
+.settings-form input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.api-key-info {
+    font-size: 12px;
+    color: #666;
+}
+
+.api-key-info a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.reupload-btn {
+    margin-left: 10px;
+    padding: 4px 8px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #666;
+}
+
+.reupload-btn:hover {
+    background-color: #e0e0e0;
+}
+
+/* Add styles for the pulsing animation and message */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+    }
+}
+
+.upload-message {
+    margin-top: 15px;
+    font-weight: bold;
+    color: #3498db;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Add these styles to popup.css */
+.resume-preview {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.resume-name {
+    font-weight: bold;
+    font-size: 16px;
+    margin: 10px 0;
+    color: #2c3e50;
+}
+
+.resume-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.summary-item {
+    background-color: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.summary-label {
+    font-weight: bold;
+    color: #555;
+}
+
+.summary-value {
+    color: #2980b9;
+}
+
+.skills-preview {
+    margin: 15px 0;
+}
+
+.skill-tag {
+    display: inline-block;
+    background-color: #e0f2fe;
+    color: #0369a1;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.more-skills {
+    display: inline-block;
+    color: #666;
+    font-size: 12px;
+    margin-left: 5px;
+} 

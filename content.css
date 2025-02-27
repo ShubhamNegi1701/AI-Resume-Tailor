@@ -1,0 +1,16 @@
+.smart-resume-matcher-highlight {
+    background-color: rgba(46, 204, 113, 0.2);
+    border-bottom: 2px solid #2ecc71;
+}
+
+.smart-resume-matcher-tooltip {
+    position: fixed;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 10000;
+    max-width: 300px;
+    font-family: 'Segoe UI', sans-serif;
+} 

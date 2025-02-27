@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Resume Matcher</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Smart Resume Matcher</h1>
+        </div>
+        
+        <div class="resume-upload" id="uploadSection">
+            <h2>Upload Your Resume</h2>
+            <input type="file" id="resumeUpload" accept=".pdf,.doc,.docx" class="file-input">
+            <label for="resumeUpload" class="upload-btn">Choose File</label>
+            <p id="fileName" class="file-name"></p>
+            <div class="upload-progress" style="display: none;">
+                <div class="progress-bar"></div>
+            </div>
+            <div class="upload-error" style="display: none; color: red;"></div>
+            
+            <div id="uploadSuccess" class="upload-success" style="display: none;">
+                <span class="success-icon">✓</span>
+                <span>Resume successfully uploaded and parsed!</span>
+            </div>
+            
+            <div id="parsedDetails" class="parsed-details" style="display: none;">
+                <h3>Parsed Resume Details</h3>
+                <div class="parsed-item">
+                    <span class="parsed-label">Pages:</span>
+                    <span class="parsed-value" id="pageCount">-</span>
+                </div>
+                <div class="parsed-item">
+                    <span class="parsed-label">Skills Found:</span>
+                    <span class="parsed-value" id="skillsCount">-</span>
+                </div>
+                <div class="parsed-item">
+                    <span class="parsed-label">Experience:</span>
+                    <span class="parsed-value" id="experienceCount">-</span>
+                </div>
+            </div>
+
+            <div id="noResumeMessage" style="display: none;">
+                <h2>No Resume Found</h2>
+                <p>You need to upload your resume to use Smart Resume Matcher</p>
+                <button id="goToUploadBtn" class="primary-btn">Upload Resume</button>
+            </div>
+        </div>
+
+        <div id="status" class="status-message"></div>
+
+        <div id="actionSection" style="display: none;">
+            <button id="editResume" class="action-btn">Edit Resume</button>
+            <button id="downloadPDF" class="action-btn">Download PDF</button>
+        </div>
+
+        <div id="settingsSection" class="settings-section">
+            <button id="settingsButton" class="settings-btn">⚙️ Settings</button>
+            
+            <div id="settingsModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <h3>Settings</h3>
+                    <div class="settings-form">
+                        <label for="apiKey">OpenAI API Key:</label>
+                        <input type="password" id="apiKey" placeholder="Enter your OpenAI API key">
+                        <div class="api-key-info">
+                            Get your API key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Dashboard</a>
+                        </div>
+                        <button id="saveSettings" class="primary-btn">Save Settings</button>
+                        <button id="closeSettings" class="secondary-btn">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="resumeDetailsModal" class="modal" style="display: none;">
+        <div class="modal-content resume-details-modal">
+            <div class="modal-header">
+                <h3>Resume Details</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body" id="resumeDetailsContent">
+                <!-- Content will be populated dynamically -->
+            </div>
+        </div>
+    </div>
+    <script src="js/pdf.min.js"></script>
+    <script src="js/pdf-parser.js" type="module"></script>
+    <script src="js/utils.js" type="module"></script>
+    <script src="popup.js" type="module"></script>
+</body>
+</html> 

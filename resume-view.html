@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume Details - Smart Resume Matcher</title>
+    <link rel="stylesheet" href="popup.css">
+    <style>
+        body {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .back-btn {
+            display: block;
+            margin: 30px auto 0;
+            text-align: center;
+        }
+        
+        /* Resume details styles */
+        .resume-section {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .resume-section h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .skill-tag {
+            display: inline-block;
+            background-color: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin: 3px;
+            font-size: 13px;
+        }
+        
+        .skill-tag.technical {
+            background-color: #d5f5e3;
+        }
+        
+        .skill-tag.soft {
+            background-color: #d6eaf8;
+        }
+        
+        .experience-item, .education-item {
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .experience-title, .education-degree {
+            font-weight: bold;
+            font-size: 15px;
+        }
+        
+        .experience-company, .education-institution {
+            font-style: italic;
+            color: #666;
+        }
+        
+        .experience-date, .education-date {
+            color: #777;
+            font-size: 12px;
+        }
+        
+        .experience-description, .education-description {
+            margin-top: 5px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="resumeName">Resume Details</h1>
+        </div>
+        
+        <div id="resumeContent">
+            <!-- This will be populated dynamically -->
+            <div class="loading">Loading resume details...</div>
+        </div>
+        
+        <a href="#" id="backButton" class="back-btn">Back to Resumes</a>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            const resumeId = params.get('id');
+            
+            if (!resumeId) {
+                document.getElementById('resumeContent').innerHTML = '<p>No resume ID specified.</p>';
+                return;
+            }
+            
+            // Load resume data
+            chrome.storage.local.get(['resumeData_' + resumeId, 'resumes'], function(result) {
+                const resumeData = result['resumeData_' + resumeId];
+                const resumes = result.resumes || [];
+                
+                if (!resumeData) {
+                    document.getElementById('resumeContent').innerHTML = '<p>Resume data not found.</p>';
+                    return;
+                }
+                
+                // Find resume metadata
+                const resumeMeta = resumes.find(r => r.id === resumeId);
+                if (resumeMeta) {
+                    document.getElementById('resumeName').textContent = resumeMeta.name;
+                    document.title = resumeMeta.name + ' - Resume Details';
+                }
+                
+                // Generate HTML
+                document.getElementById('resumeContent').innerHTML = generateResumeHTML(resumeData);
+            });
+            
+            document.getElementById('backButton').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.close();
+            });
+            
+            // Function to generate HTML (same as in popup.js)
+            function generateResumeHTML(data) {
+                let html = '';
+                
+                // Personal information
+                html += `<div class="resume-section">
+                    <h4>Personal Information</h4>
+                    <p><strong>Name:</strong> ${data.name || 'Not specified'}</p>
+                    <p><strong>Email:</strong> ${data.email || 'Not specified'}</p>
+                    <p><strong>Phone:</strong> ${data.phone || 'Not specified'}</p>
+                    <p><strong>Location:</strong> ${data.location || 'Not specified'}</p>
+                    ${data.linkedin ? `<p><strong>LinkedIn:</strong> ${data.linkedin}</p>` : ''}
+                    ${data.website ? `<p><strong>Website:</strong> ${data.website}</p>` : ''}
+                </div>`;
+                
+                // Summary section
+                if (data.summary) {
+                    html += `<div class="resume-section">
+                        <h4>Professional Summary</h4>
+                        <p>${data.summary}</p>
+                    </div>`;
+                }
+                
+                // Skills section
+                if (data.skills && data.skills.length > 0) {
+                    html += `<div class="resume-section">
+                        <h4>Skills (${data.skills.length})</h4>
+                        <div class="skills-container">`;
+                    
+                    data.skills.forEach(skill => {
+                        const skillType = skill.type || 'technical';
+                        html += `<span class="skill-tag ${skillType.toLowerCase()}">${skill.name}</span>`;
+                    });
+                    
+                    html += `</div></div>`;
+                }
+                
+                // Experience section
+                if (data.experience && data.experience.length > 0) {
+                    html += `<div class="resume-section">
+                        <h4>Work Experience (${data.experience.length})</h4>`;
+                    
+                    data.experience.forEach(exp => {
+                        html += `<div class="experience-item">
+                            <div class="experience-title">${exp.title || 'Position'}</div>
+                            <div class="experience-company">${exp.company || 'Company'}</div>
+                            <div class="experience-date">${exp.startDate || ''} ${exp.endDate ? '- ' + exp.endDate : (exp.present ? '- Present' : '')}</div>
+                            <div class="experience-description">${exp.description || ''}</div>
+                        </div>`;
+                    });
+                    
+                    html += `</div>`;
+                }
+                
+                // Education section
+                if (data.education && data.education.length > 0) {
+                    html += `<div class="resume-section">
+                        <h4>Education (${data.education.length})</h4>`;
+                    
+                    data.education.forEach(edu => {
+                        html += `<div class="education-item">
+                            <div class="education-degree">${edu.degree || 'Degree'}</div>
+                            <div class="education-institution">${edu.institution || 'Institution'}</div>
+                            <div class="education-date">${edu.startDate || ''} ${edu.endDate ? '- ' + edu.endDate : (edu.present ? '- Present' : '')}</div>
+                            ${edu.description ? `<div class="education-description">${edu.description}</div>` : ''}
+                        </div>`;
+                    });
+                    
+                    html += `</div>`;
+                }
+                
+                // Certifications section
+                if (data.certifications && data.certifications.length > 0) {
+                    html += `<div class="resume-section">
+                        <h4>Certifications (${data.certifications.length})</h4>`;
+                    
+                    data.certifications.forEach(cert => {
+                        html += `<div class="certification-item">
+                            <div><strong>${cert.name || 'Certification'}</strong></div>
+                            <div>${cert.issuer || ''}</div>
+                            <div class="certification-date">${cert.date || ''}</div>
+                        </div>`;
+                    });
+                    
+                    html += `</div>`;
+                }
+                
+                // Projects section
+                if (data.projects && data.projects.length > 0) {
+                    html += `<div class="resume-section">
+                        <h4>Projects (${data.projects.length})</h4>`;
+                    
+                    data.projects.forEach(project => {
+                        html += `<div class="project-item">
+                            <div><strong>${project.name || 'Project'}</strong></div>
+                            <div>${project.date || ''}</div>
+                            <div>${project.description || ''}</div>
+                        </div>`;
+                    });
+                    
+                    html += `</div>`;
+                }
+                
+                return html;
+            }
+        });
+    </script>
+</body>
+</html> 

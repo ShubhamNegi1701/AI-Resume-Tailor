@@ -1,0 +1,42 @@
+{
+"manifest_version": 3,
+"name": "Smart Resume Matcher",
+"version": "1.0",
+"description": "AI-powered resume customization tool that automatically tailors your resume to job descriptions on LinkedIn and Indeed",
+"permissions": [
+    "activeTab",
+    "storage",
+    "downloads"
+],
+"host_permissions": [
+    "*://*.linkedin.com/*",
+    "*://*.indeed.com/*",
+    "https://api.openai.com/*"
+],
+"action": {
+    "default_popup": "popup.html"
+},
+"content_scripts": [
+    {
+    "matches": [
+        "*://*.linkedin.com/jobs/*",
+        "*://*.indeed.com/viewjob*",
+        "*://*.indeed.com/job*"
+    ],
+    "js": ["content.js"],
+    "css": ["content.css"]
+    }
+],
+"web_accessible_resources": [{
+    "resources": [
+        "js/pdf.worker.js",
+        "js/pdf.min.js",
+        "js/pdf-parser.js"
+    ],
+    "matches": ["<all_urls>"]
+}],
+"content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+}
+}
+

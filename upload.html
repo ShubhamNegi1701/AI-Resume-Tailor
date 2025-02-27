@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload New Resume - Smart Resume Matcher</title>
+    <link rel="stylesheet" href="popup.css">
+    <style>
+        body {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        .container {
+            min-height: 400px;
+        }
+        .header h1 {
+            font-size: 24px;
+        }
+        .back-btn {
+            margin-top: 20px;
+            display: block;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Upload New Resume</h1>
+        </div>
+        
+        <div class="resume-upload" id="uploadSection">
+            <h2>Select Your New Resume</h2>
+            <input type="file" id="resumeUpload" accept=".pdf,.doc,.docx" class="file-input">
+            <label for="resumeUpload" class="upload-btn">Choose File</label>
+            <p id="fileName" class="file-name"></p>
+            <div class="upload-progress" style="display: none;">
+                <div class="progress-bar"></div>
+            </div>
+            <div class="upload-error" style="display: none; color: red;"></div>
+            
+            <div id="uploadSuccess" class="upload-success" style="display: none;">
+                <span class="success-icon">✓</span>
+                <span>Resume successfully uploaded and parsed!</span>
+            </div>
+            
+            <div id="parsedDetails" class="parsed-details" style="display: none;">
+                <h3>Parsed Resume Details</h3>
+                <div class="parsed-item">
+                    <span class="parsed-label">Pages:</span>
+                    <span class="parsed-value" id="pageCount">-</span>
+                </div>
+                <div class="parsed-item">
+                    <span class="parsed-label">Skills Found:</span>
+                    <span class="parsed-value" id="skillsCount">-</span>
+                </div>
+                <div class="parsed-item">
+                    <span class="parsed-label">Experience:</span>
+                    <span class="parsed-value" id="experienceCount">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="status" class="status-message"></div>
+        
+        <a href="#" id="backButton" class="back-btn">Back to Dashboard</a>
+    </div>
+    
+    <script src="js/pdf.min.js"></script>
+    <script src="js/pdf-parser.js" type="module"></script>
+    <script src="js/utils.js" type="module"></script>
+    <script type="module" src="upload.js"></script>
+</body>
+</html> 
