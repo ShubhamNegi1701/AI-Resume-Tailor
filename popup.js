@@ -296,6 +296,71 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.storage.local.get(null, function(data) {
         console.log('All storage data:', data);
     });
+
+    // Check if we're on a job site and get the job description
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        const currentTab = tabs[0];
+        
+        // Check if we're on LinkedIn or Indeed
+        if (currentTab && currentTab.url && (
+            currentTab.url.includes('linkedin.com/jobs') || 
+            currentTab.url.includes('indeed.com/viewjob') ||
+            currentTab.url.includes('indeed.com/job'))) {
+            
+            // Show job matching UI
+            chrome.storage.local.get(['resume', 'resumeData'], function(result) {
+                if (result.resume && result.resumeData) {
+                    const uploadSection = document.getElementById('uploadSection');
+                    if (uploadSection) {
+                        // First get the job title from the page
+                        chrome.tabs.sendMessage(currentTab.id, {action: "getJobTitle"}, function(jobTitle) {
+                            // Default title if we can't get it
+                            const title = jobTitle || "Job";
+                            
+                            uploadSection.innerHTML = `
+                                <div class="job-matching">
+                                    <h2>Job Detected!</h2>
+                                    <p class="job-title-display">${title}</p>
+                                    <p>We found a job description on this page.</p>
+                                    <button id="tailorResumeBtn" class="primary-btn" style="font-size: 16px; padding: 12px 20px; margin-top: 15px; width: 100%; animation: pulse 1.5s infinite;">
+                                        <span style="font-size: 18px; margin-right: 8px;">✨</span> 
+                                        Tailor My Resume to This Job
+                                    </button>
+                                    <div id="status" class="status-message" style="margin-top: 15px;"></div>
+                                    <div class="upload-progress" style="display: none; margin-top: 10px;">
+                                        <div class="progress-bar"></div>
+                                    </div>
+                                    <div class="upload-error" style="display: none; margin-top: 10px;"></div>
+                                </div>
+                            `;
+                            
+                            document.getElementById('tailorResumeBtn').addEventListener('click', function() {
+                                this.disabled = true;
+                                this.textContent = "Tailoring resume...";
+                                tailorResumeToJob(currentTab.id);
+                            });
+                        });
+                    }
+                } else {
+                    // No resume uploaded yet
+                    const uploadSection = document.getElementById('uploadSection');
+                    if (uploadSection) {
+                        uploadSection.innerHTML = `
+                            <div class="job-matching">
+                                <h2>Job Detected!</h2>
+                                <p>We found a job description, but you need to upload a resume first.</p>
+                                <button id="uploadResumeBtn" class="primary-btn">Upload Resume</button>
+                            </div>
+                        `;
+                        
+                        document.getElementById('uploadResumeBtn').addEventListener('click', function() {
+                            chrome.tabs.create({url: 'upload.html'});
+                        });
+                    }
+                }
+            });
+        }
+    });
 });
 
 async function processResumeFile(file) {
@@ -738,4 +803,158 @@ function showGuidedSetup() {
     
     // First step is API key setup, second is resume upload
     // Implementation details...
+}
+
+// Add this function to popup.js to safely update status in the job matching UI
+function updateJobMatchingStatus(message, isError = false) {
+    const statusElement = document.querySelector('.job-matching #status');
+    const errorElement = document.querySelector('.job-matching .upload-error');
+    const progressBar = document.querySelector('.job-matching .upload-progress');
+    
+    if (!statusElement || !errorElement || !progressBar) {
+        console.warn('Status elements not found in job matching UI');
+        return;
+    }
+    
+    if (isError) {
+        statusElement.textContent = '';
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+        progressBar.style.display = 'none';
+    } else {
+        statusElement.textContent = message;
+        errorElement.style.display = 'none';
+        if (message) {
+            progressBar.style.display = 'block';
+        } else {
+            progressBar.style.display = 'none';
+        }
+    }
+}
+
+// Update the tailorResumeToJob function to check if content script is loaded
+async function tailorResumeToJob(tabId) {
+    try {
+        updateJobMatchingStatus('Getting job description...');
+        
+        // First check if we can communicate with the content script
+        try {
+            // Send a ping message to check if content script is loaded
+            const pingResponse = await chrome.tabs.sendMessage(tabId, {action: "ping"});
+            if (!pingResponse || pingResponse !== "pong") {
+                throw new Error("Content script not responding");
+            }
+        } catch (error) {
+            console.error("Content script communication error:", error);
+            // Inject the content script manually
+            await chrome.scripting.executeScript({
+                target: {tabId: tabId},
+                files: ['content.js']
+            });
+            // Wait a moment for the script to initialize
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        
+        // Now try to get the job description
+        const jobDescription = await chrome.tabs.sendMessage(tabId, {action: "getJobDescription"});
+        
+        if (!jobDescription) {
+            throw new Error('Could not extract job description from page');
+        }
+        
+        updateJobMatchingStatus('Analyzing job description...');
+        
+        // Get the current resume
+        const result = await new Promise(resolve => {
+            chrome.storage.local.get(['resume', 'resumeData'], resolve);
+        });
+        
+        if (!result.resume || !result.resumeData) {
+            throw new Error('No resume found. Please upload a resume first.');
+        }
+        
+        updateJobMatchingStatus('Tailoring resume to job...');
+        
+        // Call AI to tailor the resume
+        const tailoredResume = await tailorResumeWithAI(result.resumeData, jobDescription);
+        
+        updateJobMatchingStatus('Resume tailored successfully!');
+        
+        // Store the tailored resume temporarily
+        chrome.storage.local.set({
+            'tailoredResume': tailoredResume,
+            'originalJobDescription': jobDescription
+        }, function() {
+            // Open the resume editor with the tailored resume
+            chrome.tabs.create({url: 'tailored-resume.html'});
+        });
+        
+    } catch (error) {
+        console.error('Error tailoring resume:', error);
+        updateJobMatchingStatus(error.message, true);
+        
+        // Re-enable the button if there was an error
+        const tailorButton = document.getElementById('tailorResumeBtn');
+        if (tailorButton) {
+            tailorButton.disabled = false;
+            tailorButton.innerHTML = '<span style="font-size: 18px; margin-right: 8px;">✨</span> Tailor My Resume to This Job';
+        }
+    }
+}
+
+// AI function to tailor the resume
+async function tailorResumeWithAI(resumeData, jobDescription) {
+    try {
+        const apiKey = await new Promise(resolve => {
+            chrome.storage.local.get(['openaiApiKey'], result => resolve(result.openaiApiKey));
+        });
+        
+        if (!apiKey) {
+            throw new Error('Please set your OpenAI API key in settings');
+        }
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: "gpt-3.5-turbo",
+                messages: [{
+                    role: "system",
+                    content: "You are an expert resume tailoring assistant. Your task is to tailor a resume to better match a job description without fabricating information."
+                }, {
+                    role: "user",
+                    content: `Tailor this resume to better match the job description. Highlight relevant skills and experiences, reorder skills based on relevance, and adjust wording to match the job requirements. Don't add fabricated information.
+                    
+                    RESUME: ${JSON.stringify(resumeData)}
+                    
+                    JOB DESCRIPTION: ${jobDescription}
+                    
+                    Return only the tailored resume as a JSON object with the same structure as the input resume.`
+                }],
+                temperature: 0.3
+            })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error?.message || 'Failed to tailor resume with AI');
+        }
+        
+        // Parse the AI response
+        const tailoredData = JSON.parse(data.choices[0].message.content);
+        console.log('AI tailored resume:', tailoredData);
+        
+        // Add a flag to indicate this is a tailored resume
+        return {
+            ...tailoredData,
+            isTailored: true,
+            tailoredDate: new Date().toISOString()
+        };
+    } catch (error) {
+        console.error('AI tailoring error:', error);
+        throw new Error('Failed to tailor resume with AI: ' + error.message);
+    }
 } 

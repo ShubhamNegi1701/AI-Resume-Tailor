@@ -391,4 +391,78 @@ body {
     color: #666;
     font-size: 12px;
     margin-left: 5px;
+}
+
+/* Add to popup.css */
+.job-matching {
+    background-color: #f0f9ff;
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.job-matching h2 {
+    color: #2980b9;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.job-matching p {
+    margin-bottom: 15px;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(46, 204, 113, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+    }
+}
+
+#tailorResumeBtn {
+    background-color: #2ecc71;
+    transition: all 0.3s;
+}
+
+#tailorResumeBtn:hover {
+    background-color: #27ae60;
+    transform: scale(1.05);
+}
+
+#tailorResumeBtn:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+.job-matching .status-message {
+    color: #2980b9;
+    font-size: 14px;
+    margin-top: 10px;
+    min-height: 20px;
+}
+
+.job-matching .upload-error {
+    color: #e74c3c;
+    background-color: #fadbd8;
+    padding: 8px;
+    border-radius: 4px;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.job-matching .job-title-display {
+    font-size: 16px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 10px 0;
+    padding: 5px 10px;
+    background-color: #e8f4fc;
+    border-radius: 4px;
+    display: inline-block;
 } 

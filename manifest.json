@@ -6,7 +6,9 @@
 "permissions": [
     "activeTab",
     "storage",
-    "downloads"
+    "downloads",
+    "tabs",
+    "scripting"
 ],
 "host_permissions": [
     "*://*.linkedin.com/*",
@@ -31,7 +33,9 @@
     "resources": [
         "js/pdf.worker.js",
         "js/pdf.min.js",
-        "js/pdf-parser.js"
+        "js/pdf-parser.js",
+        "tailored-resume.html",
+        "tailored-resume.js"
     ],
     "matches": ["<all_urls>"]
 }],

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tailored Resume - Smart Resume Matcher</title>
+    <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" href="editor.css">
+    <style>
+        body {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            width: 100%;
+        }
+        
+        .comparison-view {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .comparison-column {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .highlight {
+            background-color: #e6f7ff;
+            padding: 2px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .changes-list {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .change-item {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .change-item:last-child {
+            border-bottom: none;
+        }
+        
+        .highlight-change {
+            background-color: #e6ffed;
+            border-left: 3px solid #2ecc71;
+            padding-left: 10px;
+        }
+        
+        .muted-change {
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+        
+        .change-details {
+            margin: 10px 0;
+            padding: 5px;
+            max-height: none;
+        }
+        
+        .change-original, .change-tailored {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .change-original p, .change-tailored p {
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        .experience-change {
+            margin-top: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .experience-change:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Tailored Resume</h1>
+            <p>Your resume has been tailored to match the job description.</p>
+        </div>
+        
+        <div class="changes-list" id="changesList">
+            <h3>Recommended Changes</h3>
+            <p>Loading changes...</p>
+        </div>
+        
+        <div class="comparison-view">
+            <div class="comparison-column">
+                <h3>Job Description</h3>
+                <div id="jobDescription" class="job-description-text">
+                    Loading job description...
+                </div>
+            </div>
+            <div class="comparison-column">
+                <h3>Tailored Resume Highlights</h3>
+                <div id="resumeHighlights" class="resume-highlights">
+                    Loading highlights...
+                </div>
+            </div>
+        </div>
+        
+        <div class="resume-editor" id="resumeEditor">
+            <h2>Edit Tailored Resume</h2>
+            
+            <div class="resume-section">
+                <h3>Personal Information</h3>
+                <div class="form-group">
+                    <input type="text" id="fullName" placeholder="Full Name">
+                    <input type="email" id="email" placeholder="Email">
+                    <input type="tel" id="phone" placeholder="Phone">
+                    <input type="text" id="location" placeholder="Location">
+                </div>
+            </div>
+            
+            <div class="resume-section">
+                <h3>Professional Summary</h3>
+                <textarea id="summary" rows="4" placeholder="Professional summary"></textarea>
+            </div>
+            
+            <div class="resume-section">
+                <h3>Skills</h3>
+                <div id="skillsList" class="skills-container"></div>
+                <div class="skill-input">
+                    <input type="text" id="skillInput" placeholder="Add a skill">
+                    <button id="addSkill" class="add-btn">Add</button>
+                </div>
+            </div>
+            
+            <div class="resume-section">
+                <h3>Experience</h3>
+                <div id="experienceList"></div>
+                <button id="addExperience" class="add-btn">+ Add Experience</button>
+            </div>
+            
+            <div class="resume-section">
+                <h3>Education</h3>
+                <div id="educationList"></div>
+                <button id="addEducation" class="add-btn">+ Add Education</button>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button id="saveAsNewBtn" class="primary-btn">Save as New Resume</button>
+            <button id="downloadBtn" class="secondary-btn">Download PDF</button>
+            <button id="applyWithResumeBtn" class="primary-btn">Apply with this Resume</button>
+            <button id="cancelBtn" class="secondary-btn">Cancel</button>
+        </div>
+    </div>
+    
+    <script src="tailored-resume.js" type="module"></script>
+</body>
+</html> 
